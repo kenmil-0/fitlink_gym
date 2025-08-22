@@ -1,6 +1,7 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useAuth } from '../hooks/useAuth';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 // Auth Screens
 import LoginScreen from '../screens/Auth/LoginScreen';
@@ -24,7 +25,12 @@ import GymOwnerSettings from '../screens/GymOwner/GymOwnerSettings';
 const Stack = createStackNavigator();
 
 export default function AppNavigator() {
-  const { isAuthenticated, userRole } = useAuth();
+  const { isAuthenticated, userRole, isLoading } = useAuth();
+
+  // Show loading spinner while checking authentication
+  if (isLoading) {
+    return <LoadingSpinner text="Loading..." />;
+  }
 
   if (!isAuthenticated) {
     return (
