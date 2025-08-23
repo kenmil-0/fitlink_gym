@@ -6,28 +6,30 @@ A cross-platform mobile application for gym management with role-based access fo
 
 ### 🔐 Authentication
 - Login and Registration with role selection
-- JWT token-based authentication
+- JWT token-based authentication with Laravel Sanctum
 - Role-based access control (Member, Trainer, Gym Owner)
+- Automatic token refresh and "remember me" functionality
+- Secure token storage with AsyncStorage
 
 ### 👤 Role-Based Dashboards
 
 #### Member Dashboard
-- Subscription status overview
-- Workout tracking and progress
+- Real-time subscription status from API
+- Live workout tracking and progress
 - Quick access to fitness routines
-- Progress statistics
+- Progress statistics with pull-to-refresh
 
 #### Trainer Dashboard
-- Client management
-- Workout routine creation
+- Real-time client management from API
+- Workout routine creation and management
 - Progress tracking for assigned clients
-- Schedule management
+- Schedule management with live data
 
 #### Gym Owner Dashboard
-- Member management
-- Revenue tracking
-- Subscription management
-- Trainer oversight
+- Real-time member management from API
+- Live revenue tracking and statistics
+- Subscription management with live data
+- Trainer oversight with dynamic data
 
 ### 🎨 Design & Styling
 - **NativeWind** (Tailwind CSS for React Native)
@@ -37,6 +39,14 @@ A cross-platform mobile application for gym management with role-based access fo
   - Neutral Gray: `#1f2937`
 - Modern, fitness-oriented UI design
 - Smooth animations and transitions
+- Loading states and error handling
+
+### 🔧 API Integration
+- **Laravel Sanctum** backend integration
+- Automatic token refresh on 401 errors
+- Role-based API endpoints
+- Real-time data fetching
+- Error handling and retry logic
 
 ## 🛠️ Tech Stack
 
@@ -44,8 +54,9 @@ A cross-platform mobile application for gym management with role-based access fo
 - **TypeScript** - Type safety and better development experience
 - **NativeWind** - Utility-first styling with Tailwind CSS
 - **React Navigation** - Navigation between screens
-- **Axios** - HTTP client for API requests
+- **Axios** - HTTP client for API requests with interceptors
 - **AsyncStorage** - Local data persistence
+- **Laravel Sanctum** - Backend authentication
 
 ## 📱 App Structure
 
@@ -53,17 +64,27 @@ A cross-platform mobile application for gym management with role-based access fo
 fitlink-app/
 ├── src/
 │   ├── navigation/
-│   │   └── AppNavigator.tsx        # Role-based navigation
+│   │   └── AppNavigator.tsx        # Role-based navigation with loading states
 │   ├── screens/
-│   │   ├── Auth/                   # Login, Register
-│   │   ├── Member/                 # Member dashboard, workouts
-│   │   ├── Trainer/                # Trainer dashboard, routines
-│   │   └── GymOwner/               # Gym owner dashboard, subscriptions
+│   │   ├── Auth/                   # Login, Register (connected to backend)
+│   │   ├── Member/                 # Member dashboard (live API data)
+│   │   ├── Trainer/                # Trainer dashboard (live API data)
+│   │   └── GymOwner/               # Gym owner dashboard (live API data)
 │   ├── components/                 # Reusable UI components
+│   │   ├── Button.tsx
+│   │   ├── Input.tsx
+│   │   ├── Card.tsx
+│   │   └── LoadingSpinner.tsx
 │   ├── hooks/                      # Custom hooks (auth, API)
+│   │   └── useAuth.ts              # Enhanced with token refresh
 │   └── utils/                      # API utilities, helpers
+│       └── api.ts                  # Complete API integration
 ├── app.json
 ├── tailwind.config.js
+├── babel.config.js
+├── nativewind-env.d.ts
+├── env.example                     # Environment configuration
+├── BACKEND_SETUP.md               # Laravel backend setup guide
 └── package.json
 ```
 
@@ -75,6 +96,7 @@ fitlink-app/
 - Expo CLI
 - iOS Simulator (for iOS development)
 - Android Studio (for Android development)
+- Laravel backend (see BACKEND_SETUP.md)
 
 ### Installation
 
@@ -89,12 +111,18 @@ fitlink-app/
    npm install
    ```
 
-3. **Start the development server**
+3. **Set up environment variables**
+   ```bash
+   cp env.example .env
+   # Edit .env with your API URL
+   ```
+
+4. **Start the development server**
    ```bash
    npm start
    ```
 
-4. **Run on device/simulator**
+5. **Run on device/simulator**
    ```bash
    # For iOS
    npm run ios
@@ -114,33 +142,42 @@ Create a `.env` file in the root directory:
 EXPO_PUBLIC_API_URL=http://localhost:8000/api/v1
 ```
 
-### API Integration
-The app is configured to connect to a Laravel backend. Update the `EXPO_PUBLIC_API_URL` in your environment variables to point to your backend server.
+### Backend Setup
+Follow the `BACKEND_SETUP.md` guide to set up your Laravel backend with:
+- Laravel Sanctum authentication
+- Role-based API endpoints
+- Database migrations
+- Sample controllers with mock data
 
-## 📱 Screenshots
+## 📱 API Integration
 
-### Authentication
-- Login screen with email/password
-- Registration with role selection
-- Form validation and error handling
+### Authentication Flow
+1. **Login/Register** → Laravel Sanctum token
+2. **Token Storage** → AsyncStorage with refresh token
+3. **Auto Refresh** → Automatic token refresh on 401 errors
+4. **Remember Me** → Persistent sessions across app restarts
 
-### Member Dashboard
-- Subscription status
-- Workout overview
-- Progress tracking
-- Quick actions
+### API Endpoints
+- `POST /api/v1/register` - User registration
+- `POST /api/v1/login` - User login
+- `POST /api/v1/refresh` - Token refresh
+- `POST /api/v1/logout` - User logout
+- `GET /api/v1/user` - Get current user
 
-### Trainer Dashboard
-- Client management
-- Routine creation
-- Progress monitoring
-- Schedule overview
+#### Member Endpoints
+- `GET /api/v1/member/subscription` - Get subscription status
+- `GET /api/v1/member/workouts` - Get workouts
+- `GET /api/v1/member/progress` - Get progress stats
 
-### Gym Owner Dashboard
-- Member management
-- Revenue tracking
-- Subscription overview
-- Management actions
+#### Trainer Endpoints
+- `GET /api/v1/trainer/clients` - Get assigned clients
+- `GET /api/v1/trainer/routines` - Get created routines
+- `POST /api/v1/trainer/routines` - Create new routine
+
+#### Gym Owner Endpoints
+- `GET /api/v1/gym-owner/members` - Get all members
+- `GET /api/v1/gym-owner/revenue` - Get revenue data
+- `GET /api/v1/gym-owner/subscriptions` - Get subscriptions
 
 ## 🎯 Key Components
 
@@ -148,15 +185,17 @@ The app is configured to connect to a Laravel backend. Update the `EXPO_PUBLIC_A
 - **Button** - Multiple variants (primary, secondary, outline)
 - **Input** - Form inputs with validation
 - **Card** - Content containers with consistent styling
+- **LoadingSpinner** - Global loading states
 
 ### Custom Hooks
-- **useAuth** - Authentication state management
-- **API utilities** - Centralized API calls
+- **useAuth** - Enhanced authentication with token refresh
+- **API utilities** - Centralized API calls with error handling
 
 ## 🔄 State Management
 - React Context for authentication state
 - AsyncStorage for persistent data
 - Role-based navigation flow
+- Loading states and error boundaries
 
 ## 🎨 Styling Guidelines
 
@@ -213,11 +252,26 @@ npm run test:coverage
 ## 📚 API Documentation
 
 The app includes pre-configured API endpoints for:
-- Authentication (login, register, logout)
-- Workouts management
-- Member management
-- Trainer operations
-- Subscription handling
+- Authentication (login, register, logout, refresh)
+- Member operations (subscription, workouts, progress)
+- Trainer operations (clients, routines)
+- Gym Owner operations (members, revenue, subscriptions)
+
+## 🔐 Security Features
+
+- **Token-based Authentication** - Laravel Sanctum JWT tokens
+- **Automatic Token Refresh** - Seamless session management
+- **Secure Storage** - AsyncStorage for token persistence
+- **Error Handling** - Graceful API error management
+- **Role-based Access** - Protected routes and endpoints
+
+## 🚀 Performance Features
+
+- **Pull-to-Refresh** - Real-time data updates
+- **Loading States** - Better user experience
+- **Error Boundaries** - Graceful error handling
+- **Optimized API Calls** - Efficient data fetching
+- **Caching** - Local data persistence
 
 ## 🤝 Contributing
 
@@ -237,7 +291,14 @@ For support and questions:
 - Create an issue in the repository
 - Contact the development team
 - Check the documentation
+- Review BACKEND_SETUP.md for backend issues
 
 ---
 
 **Fitlink** - Your fitness journey starts here! 💪
+
+## 🔗 Quick Links
+
+- [Backend Setup Guide](./BACKEND_SETUP.md)
+- [Environment Configuration](./env.example)
+- [API Documentation](./BACKEND_SETUP.md#api-endpoints)
