@@ -13,6 +13,9 @@ use App\Http\Controllers\Api\V1\ChatController;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\Admin\GymApprovalController;
 use App\Http\Controllers\Api\V1\Admin\FraudReportController;
+use App\Http\Controllers\Api\V1\MemberController;
+use App\Http\Controllers\Api\V1\TrainerController;
+use App\Http\Controllers\Api\V1\GymOwnerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,6 +34,16 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // API Version 1 Routes
 Route::prefix('v1')->group(function () {
+    
+    // Test route to verify connection
+    Route::get('/test', function () {
+        return response()->json([
+            'message' => 'Fitlink API is working!',
+            'timestamp' => now(),
+            'status' => 'success',
+            'version' => '1.0.0'
+        ]);
+    });
     
     // Public routes (no authentication required)
     Route::post('/auth/register', [AuthController::class, 'register']);
@@ -60,6 +73,27 @@ Route::prefix('v1')->group(function () {
         // Device token management
         Route::post('/auth/device-token', [AuthController::class, 'storeDeviceToken']);
         Route::delete('/auth/device-token/{token}', [AuthController::class, 'removeDeviceToken']);
+        
+        // Member routes
+        Route::prefix('member')->group(function () {
+            Route::get('/subscription', [MemberController::class, 'getSubscription']);
+            Route::get('/workouts', [MemberController::class, 'getWorkouts']);
+            Route::get('/progress', [MemberController::class, 'getProgress']);
+        });
+
+        // Trainer routes
+        Route::prefix('trainer')->group(function () {
+            Route::get('/clients', [TrainerController::class, 'getClients']);
+            Route::get('/routines', [TrainerController::class, 'getRoutines']);
+            Route::post('/routines', [TrainerController::class, 'createRoutine']);
+        });
+
+        // Gym Owner routes
+        Route::prefix('gym-owner')->group(function () {
+            Route::get('/members', [GymOwnerController::class, 'getMembers']);
+            Route::get('/revenue', [GymOwnerController::class, 'getRevenue']);
+            Route::get('/subscriptions', [GymOwnerController::class, 'getSubscriptions']);
+        });
         
         // Gym management (for gym owners)
         Route::middleware('role:gym_owner')->group(function () {

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../hooks/useAuth';
+import { testAPI } from '../../utils/api';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 
@@ -26,6 +27,18 @@ export default function LoginScreen() {
     }
   };
 
+  const handleTestConnection = async () => {
+    setLoading(true);
+    const result = await testAPI();
+    setLoading(false);
+
+    if (result.success) {
+      Alert.alert('Success', `API Connection: ${result.data.message}\nTimestamp: ${result.data.timestamp}`);
+    } else {
+      Alert.alert('Error', `API Connection Failed: ${result.error}`);
+    }
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       <ScrollView className="flex-1 px-6">
@@ -42,6 +55,14 @@ export default function LoginScreen() {
               Your fitness journey starts here
             </Text>
           </View>
+
+          {/* Test Connection Button */}
+          <Button
+            title="Test API Connection"
+            onPress={handleTestConnection}
+            variant="outline"
+            className="mb-6"
+          />
 
           {/* Login Form */}
           <View className="space-y-4">

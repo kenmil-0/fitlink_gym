@@ -68,6 +68,19 @@ api.interceptors.response.use(
   }
 );
 
+// Test API connection
+export const testAPI = async () => {
+  try {
+    const response = await api.get('/test');
+    return { success: true, data: response.data };
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error.response?.data?.message || 'Failed to connect to API'
+    };
+  }
+};
+
 // Auth API endpoints
 export const authAPI = {
   login: async (email: string, password: string) => {

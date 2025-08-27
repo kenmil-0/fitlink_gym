@@ -28,8 +28,9 @@ return new class extends Migration
             $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps();
             
+            // valid indexes
             $table->index(['body_region', 'difficulty']);
-            $table->index(['is_active', 'schedule_days']);
+            $table->index('is_active');
         });
     }
 
