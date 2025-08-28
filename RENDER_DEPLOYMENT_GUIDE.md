@@ -10,6 +10,8 @@
 ### 1. Root Directory Files
 - ✅ `render.yaml` - Render configuration file
 - ✅ `RENDER_DEPLOYMENT_GUIDE.md` - This guide
+- ✅ `.render-buildpacks.json` - PHP buildpack configuration
+- ✅ `composer.json` - Root-level PHP project configuration
 
 ### 2. Backend Directory Files
 - ✅ `backend/.env.example` - Environment variables template
@@ -22,7 +24,7 @@
 ### Step 1: Push to GitHub
 ```bash
 git add .
-git commit -m "Prepare for Render deployment"
+git commit -m "Fix Render PHP detection and deployment configuration"
 git push origin main
 ```
 
@@ -43,7 +45,7 @@ git push origin main
    - Service name: `fitlink-api`
    - Root directory: `backend`
    - Environment: PHP
-   - Build command: `composer install --no-dev && php artisan key:generate && php artisan migrate --force`
+   - Build command: `composer install --no-dev --optimize-autoloader && php artisan key:generate --force && php artisan migrate --force && php artisan config:cache && php artisan route:cache && php artisan view:cache`
    - Start command: `php artisan serve --host 0.0.0.0 --port $PORT`
 
 3. **Add Database**
@@ -64,7 +66,7 @@ git push origin main
    - **Name**: `fitlink-api`
    - **Root Directory**: `backend`
    - **Environment**: `PHP`
-   - **Build Command**: `composer install --no-dev && php artisan key:generate && php artisan migrate --force`
+   - **Build Command**: `composer install --no-dev --optimize-autoloader && php artisan key:generate --force && php artisan migrate --force && php artisan config:cache && php artisan route:cache && php artisan view:cache`
    - **Start Command**: `php artisan serve --host 0.0.0.0 --port $PORT`
 
 3. **Add Environment Variables**
@@ -140,22 +142,28 @@ const API_BASE_URL = 'https://your-app-name.onrender.com/api/v1';
 
 ### Common Issues
 
-1. **Build Fails**
+1. **PHP Not Found Error**
+   - **Problem**: `bash: line 1: php: command not found`
+   - **Solution**: Ensure `.render-buildpacks.json` is in root directory
+   - **Solution**: Ensure `composer.json` is in root directory
+   - **Solution**: Verify `rootDir: backend` in render.yaml
+
+2. **Build Fails**
    - Check build logs in Render dashboard
    - Ensure all dependencies are in `composer.json`
    - Verify PHP version compatibility
 
-2. **Database Connection Error**
+3. **Database Connection Error**
    - Verify database environment variables
    - Check database service is running
    - Ensure migrations can run
 
-3. **500 Internal Server Error**
+4. **500 Internal Server Error**
    - Check application logs in Render dashboard
    - Verify `.env` variables are set correctly
    - Ensure storage permissions are correct
 
-4. **CORS Issues**
+5. **CORS Issues**
    - Add CORS middleware to Laravel
    - Configure allowed origins in your app
 
