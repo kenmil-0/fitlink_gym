@@ -54,7 +54,7 @@ curl -X POST http://192.168.1.179:8000/api/v1/auth/login \
 ```bash
 curl -X GET http://192.168.1.179:8000/api/v1/auth/profile \
   -H "Authorization: Bearer YOUR_TOKEN_HERE"
-```
+```2|L86IFJo5EyBio6immbxDhjPTLTeXX5x5QSyBWKlP8c2378ef
 
 ### 4. Logout
 ```bash

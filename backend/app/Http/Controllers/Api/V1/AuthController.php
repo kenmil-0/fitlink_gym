@@ -25,7 +25,7 @@ class AuthController extends Controller
             'password' => ['required', 'confirmed', Password::defaults()],
             'phone' => 'nullable|string|max:20',
             'location' => 'nullable|string|max:255',
-            'role' => 'required|in:user,gym_owner',
+            'role' => 'required|in:member,trainer,gym_owner',
         ]);
 
         if ($validator->fails()) {
