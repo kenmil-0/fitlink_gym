@@ -2,7 +2,7 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Base API configuration
-const API_BASE_URL = 'http://192.168.1.179:8000/api/v1';
+const API_BASE_URL = 'https://fitlink-api.page.gd/api/v1';
 
 // Create axios instance
 const api = axios.create({
