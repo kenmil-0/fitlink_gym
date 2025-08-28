@@ -2,6 +2,7 @@ services:
   - type: web
     name: fitlink-api
     env: php
+    plan: free
     buildCommand: chmod +x build.sh && ./build.sh
     startCommand: php artisan serve --host=0.0.0.0 --port=$PORT
     envVars:
