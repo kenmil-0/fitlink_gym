@@ -2,7 +2,7 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Base API configuration
-const API_BASE_URL = 'https://fitlink-api.page.gd/api/v1';
+const API_BASE_URL = 'http://172.20.10.4:8000/api/v1';
 
 // Create axios instance
 const api = axios.create({
@@ -85,7 +85,7 @@ export const testAPI = async () => {
 export const authAPI = {
   login: async (email: string, password: string) => {
     try {
-      const response = await api.post('/login', { email, password });
+      const response = await api.post('/auth/login', { email, password });
       const { user, token } = response.data;
       
       // Store tokens and user data
@@ -112,7 +112,7 @@ export const authAPI = {
     role: string;
   }) => {
     try {
-      const response = await api.post('/register', userData);
+      const response = await api.post('/auth/register', userData);
       const { user, token } = response.data;
       
       // Store tokens and user data
@@ -133,7 +133,7 @@ export const authAPI = {
 
   logout: async () => {
     try {
-      await api.post('/logout');
+      await api.post('/auth/logout');
       await AsyncStorage.multiRemove(['auth_token', 'refresh_token', 'user_data']);
       return { success: true };
     } catch (error: any) {
@@ -145,7 +145,7 @@ export const authAPI = {
 
   me: async () => {
     try {
-      const response = await api.get('/user');
+      const response = await api.get('/auth/profile');
       return { success: true, user: response.data };
     } catch (error: any) {
       return { 

@@ -5,6 +5,7 @@
     "jsx": "react-jsx",
     "module": "ESNext",
     "types": ["react", "react-native"],
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   }
 }
