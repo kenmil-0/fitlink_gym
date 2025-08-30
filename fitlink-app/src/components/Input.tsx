@@ -10,6 +10,7 @@ interface InputProps {
   keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad';
   error?: string;
   className?: string;
+  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
 }
 
 export default function Input({
@@ -21,6 +22,7 @@ export default function Input({
   keyboardType = 'default',
   error,
   className = '',
+  autoCapitalize = 'none',
 }: InputProps) {
   return (
     <View className={`mb-4 ${className}`}>
@@ -39,7 +41,7 @@ export default function Input({
         onChangeText={onChangeText}
         secureTextEntry={secureTextEntry}
         keyboardType={keyboardType}
-        autoCapitalize="none"
+        autoCapitalize={autoCapitalize}
       />
       {error && (
         <Text className="text-red-500 text-sm mt-1">{error}</Text>

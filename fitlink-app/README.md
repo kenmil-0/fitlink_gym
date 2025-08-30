@@ -1,304 +1,205 @@
-# Fitlink React Native App
+# Fitlink Mobile App
 
-A cross-platform mobile application for gym management with role-based access for Members, Trainers, and Gym Owners.
+A comprehensive fitness app that connects gym members, instructors, and gym owners. Built with Expo React Native, TypeScript, and NativeWind.
 
-## 🚀 Features
+## Features
 
-### 🔐 Authentication
-- Login and Registration with role selection
-- JWT token-based authentication with Laravel Sanctum
-- Role-based access control (Member, Trainer, Gym Owner)
-- Automatic token refresh and "remember me" functionality
-- Secure token storage with AsyncStorage
+### For Members
+- **Gym Discovery**: Browse and select gyms in your area
+- **Subscription Management**: Choose and manage gym subscriptions
+- **QR Check-in**: Quick gym access with QR code
+- **Workout Routines**: View personalized workout plans
+- **Diet Tracking**: Monitor nutrition and meal plans
+- **Notifications**: Real-time updates and reminders
 
-### 👤 Role-Based Dashboards
+### For Staff/Instructors
+- **QR Scanner**: Scan member QR codes for check-in
+- **Member Management**: View member information and status
+- **Assignment Tracking**: Manage member assignments
 
-#### Member Dashboard
-- Real-time subscription status from API
-- Live workout tracking and progress
-- Quick access to fitness routines
-- Progress statistics with pull-to-refresh
+### For Gym Owners
+- **Dashboard**: Overview of gym operations and metrics
+- **Member Management**: Comprehensive member administration
+- **Revenue Tracking**: Monitor subscription and payment data
+- **Analytics**: Performance insights and reports
 
-#### Trainer Dashboard
-- Real-time client management from API
-- Workout routine creation and management
-- Progress tracking for assigned clients
-- Schedule management with live data
+## Tech Stack
 
-#### Gym Owner Dashboard
-- Real-time member management from API
-- Live revenue tracking and statistics
-- Subscription management with live data
-- Trainer oversight with dynamic data
+- **Framework**: Expo React Native
+- **Language**: TypeScript
+- **Navigation**: React Navigation (Stack + Bottom Tabs)
+- **Styling**: NativeWind (Tailwind CSS for React Native)
+- **State Management**: Zustand
+- **HTTP Client**: Axios
+- **Storage**: Expo SecureStore
+- **QR Code**: react-native-qrcode-svg
+- **Barcode Scanner**: expo-barcode-scanner
+- **Notifications**: expo-notifications
 
-### 🎨 Design & Styling
-- **NativeWind** (Tailwind CSS for React Native)
-- **Fitlink Brand Colors**:
-  - Primary Green: `#22c55e`
-  - Accent Orange: `#f97316`
-  - Neutral Gray: `#1f2937`
-- Modern, fitness-oriented UI design
-- Smooth animations and transitions
-- Loading states and error handling
+## Prerequisites
 
-### 🔧 API Integration
-- **Laravel Sanctum** backend integration
-- Automatic token refresh on 401 errors
-- Role-based API endpoints
-- Real-time data fetching
-- Error handling and retry logic
-
-## 🛠️ Tech Stack
-
-- **React Native (Expo)** - Cross-platform development
-- **TypeScript** - Type safety and better development experience
-- **NativeWind** - Utility-first styling with Tailwind CSS
-- **React Navigation** - Navigation between screens
-- **Axios** - HTTP client for API requests with interceptors
-- **AsyncStorage** - Local data persistence
-- **Laravel Sanctum** - Backend authentication
-
-## 📱 App Structure
-
-```
-fitlink-app/
-├── src/
-│   ├── navigation/
-│   │   └── AppNavigator.tsx        # Role-based navigation with loading states
-│   ├── screens/
-│   │   ├── Auth/                   # Login, Register (connected to backend)
-│   │   ├── Member/                 # Member dashboard (live API data)
-│   │   ├── Trainer/                # Trainer dashboard (live API data)
-│   │   └── GymOwner/               # Gym owner dashboard (live API data)
-│   ├── components/                 # Reusable UI components
-│   │   ├── Button.tsx
-│   │   ├── Input.tsx
-│   │   ├── Card.tsx
-│   │   └── LoadingSpinner.tsx
-│   ├── hooks/                      # Custom hooks (auth, API)
-│   │   └── useAuth.ts              # Enhanced with token refresh
-│   └── utils/                      # API utilities, helpers
-│       └── api.ts                  # Complete API integration
-├── app.json
-├── tailwind.config.js
-├── babel.config.js
-├── nativewind-env.d.ts
-├── env.example                     # Environment configuration
-├── BACKEND_SETUP.md               # Laravel backend setup guide
-└── package.json
-```
-
-## 🚀 Getting Started
-
-### Prerequisites
 - Node.js (v16 or higher)
 - npm or yarn
 - Expo CLI
 - iOS Simulator (for iOS development)
 - Android Studio (for Android development)
-- Laravel backend (see BACKEND_SETUP.md)
 
-### Installation
+## Installation & Setup
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd fitlink-app
-   ```
+### 1. Clone the Repository
+```bash
+git clone <repository-url>
+cd fitlink-app
+```
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+### 2. Install Dependencies
+```bash
+npm install
+```
 
-3. **Set up environment variables**
-   ```bash
-   cp env.example .env
-   # Edit .env with your API URL
-   ```
-
-4. **Start the development server**
-   ```bash
-   npm start
-   ```
-
-5. **Run on device/simulator**
-   ```bash
-   # For iOS
-   npm run ios
-   
-   # For Android
-   npm run android
-   
-   # For web
-   npm run web
-   ```
-
-## 🔧 Configuration
-
-### Environment Variables
+### 3. Environment Configuration
 Create a `.env` file in the root directory:
 ```env
-EXPO_PUBLIC_API_URL=http://localhost:8000/api/v1
+# API Configuration
+EXPO_PUBLIC_API_URL=http://192.168.1.xxx:8000/api/v1
+
+# Firebase Configuration (for push notifications)
+EXPO_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
+EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
+EXPO_PUBLIC_FIREBASE_PROJECT_ID=your_firebase_project_id
+EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=your_firebase_storage_bucket
+EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_firebase_messaging_sender_id
+EXPO_PUBLIC_FIREBASE_APP_ID=your_firebase_app_id
 ```
 
-### Backend Setup
-Follow the `BACKEND_SETUP.md` guide to set up your Laravel backend with:
-- Laravel Sanctum authentication
-- Role-based API endpoints
-- Database migrations
-- Sample controllers with mock data
+**Important**: Replace `192.168.1.xxx` with your actual backend server IP address.
 
-## 📱 API Integration
-
-### Authentication Flow
-1. **Login/Register** → Laravel Sanctum token
-2. **Token Storage** → AsyncStorage with refresh token
-3. **Auto Refresh** → Automatic token refresh on 401 errors
-4. **Remember Me** → Persistent sessions across app restarts
-
-### API Endpoints
-- `POST /api/v1/register` - User registration
-- `POST /api/v1/login` - User login
-- `POST /api/v1/refresh` - Token refresh
-- `POST /api/v1/logout` - User logout
-- `GET /api/v1/user` - Get current user
-
-#### Member Endpoints
-- `GET /api/v1/member/subscription` - Get subscription status
-- `GET /api/v1/member/workouts` - Get workouts
-- `GET /api/v1/member/progress` - Get progress stats
-
-#### Trainer Endpoints
-- `GET /api/v1/trainer/clients` - Get assigned clients
-- `GET /api/v1/trainer/routines` - Get created routines
-- `POST /api/v1/trainer/routines` - Create new routine
-
-#### Gym Owner Endpoints
-- `GET /api/v1/gym-owner/members` - Get all members
-- `GET /api/v1/gym-owner/revenue` - Get revenue data
-- `GET /api/v1/gym-owner/subscriptions` - Get subscriptions
-
-## 🎯 Key Components
-
-### Reusable Components
-- **Button** - Multiple variants (primary, secondary, outline)
-- **Input** - Form inputs with validation
-- **Card** - Content containers with consistent styling
-- **LoadingSpinner** - Global loading states
-
-### Custom Hooks
-- **useAuth** - Enhanced authentication with token refresh
-- **API utilities** - Centralized API calls with error handling
-
-## 🔄 State Management
-- React Context for authentication state
-- AsyncStorage for persistent data
-- Role-based navigation flow
-- Loading states and error boundaries
-
-## 🎨 Styling Guidelines
-
-### Colors
-```javascript
-// Primary colors
-primary-green: '#22c55e'
-primary-orange: '#f97316'
-neutral-gray: '#1f2937'
-
-// Usage in components
-className="bg-primary-green text-white"
-className="text-primary-orange"
-```
-
-### Typography
-- Headings: Poppins font family
-- Body text: Inter font family
-- Consistent text sizing with Tailwind classes
-
-## 🚀 Deployment
-
-### Building for Production
+### 4. Start the Development Server
 ```bash
-# Build for iOS
-expo build:ios
-
-# Build for Android
-expo build:android
+npm start
 ```
 
-### App Store Deployment
-1. Configure app.json with your app details
-2. Build the production version
-3. Submit to App Store/Google Play Store
+### 5. Run on Device/Simulator
+- **iOS**: Press `i` in the terminal or scan QR code with Expo Go app
+- **Android**: Press `a` in the terminal or scan QR code with Expo Go app
+- **Web**: Press `w` in the terminal
 
-## 🔧 Development
+## Project Structure
 
-### Code Style
-- TypeScript for type safety
-- Functional components with hooks
-- Consistent naming conventions
-- Component-based architecture
-
-### Testing
-```bash
-# Run tests
-npm test
-
-# Run with coverage
-npm run test:coverage
+```
+src/
+├── api/                    # API modules
+│   ├── auth.ts            # Authentication endpoints
+│   ├── gyms.ts            # Gym-related endpoints
+│   ├── subscriptions.ts   # Subscription management
+│   ├── checkin.ts         # Check-in functionality
+│   └── notifications.ts   # Notification handling
+├── components/            # Reusable UI components
+│   ├── Button.tsx
+│   ├── Input.tsx
+│   ├── Card.tsx
+│   └── LoadingSpinner.tsx
+├── navigation/            # Navigation configuration
+│   ├── RootNavigator.tsx  # Main navigation router
+│   ├── AuthNavigator.tsx  # Authentication flow
+│   ├── MemberTabs.tsx     # Member bottom tabs
+│   ├── OwnerStack.tsx     # Gym owner navigation
+│   └── StaffStack.tsx     # Staff navigation
+├── screens/               # App screens
+│   ├── Auth/             # Authentication screens
+│   ├── Member/           # Member-specific screens
+│   ├── Staff/            # Staff-specific screens
+│   └── Owner/            # Owner-specific screens
+├── store/                # State management
+│   ├── useAuthStore.ts   # Authentication state
+│   ├── useGymStore.ts    # Gym-related state
+│   └── useNotifStore.ts  # Notification state
+└── utils/                # Utility functions
+    └── api.ts            # API configuration
 ```
 
-## 📚 API Documentation
+## API Integration
 
-The app includes pre-configured API endpoints for:
-- Authentication (login, register, logout, refresh)
-- Member operations (subscription, workouts, progress)
-- Trainer operations (clients, routines)
-- Gym Owner operations (members, revenue, subscriptions)
+The app integrates with a Laravel backend API. Key endpoints:
 
-## 🔐 Security Features
+- **Authentication**: `/auth/login`, `/auth/register`, `/auth/logout`
+- **Gyms**: `/gyms`, `/gyms/{id}`, `/gyms/{id}/plans`
+- **Subscriptions**: `/subscriptions`, `/subscriptions/{id}`
+- **Check-in**: `/check-in`
+- **Notifications**: `/notifications`
 
-- **Token-based Authentication** - Laravel Sanctum JWT tokens
-- **Automatic Token Refresh** - Seamless session management
-- **Secure Storage** - AsyncStorage for token persistence
-- **Error Handling** - Graceful API error management
-- **Role-based Access** - Protected routes and endpoints
+## Testing the App
 
-## 🚀 Performance Features
+### 1. Member Flow
+1. Register as a member
+2. Browse and select a gym
+3. Choose a subscription plan
+4. Complete payment (mock)
+5. Access member features (QR code, routines, etc.)
 
-- **Pull-to-Refresh** - Real-time data updates
-- **Loading States** - Better user experience
-- **Error Boundaries** - Graceful error handling
-- **Optimized API Calls** - Efficient data fetching
-- **Caching** - Local data persistence
+### 2. Staff Flow
+1. Register as instructor/staff
+2. Use QR scanner to check in members
+3. View member information and status
 
-## 🤝 Contributing
+### 3. Owner Flow
+1. Register as gym owner
+2. Access dashboard with gym metrics
+3. Manage members and subscriptions
+
+## Development Notes
+
+### Mock Data
+- The app includes mock data for development when backend endpoints are not available
+- Check individual API modules for mock implementations
+- Replace mocks with actual API calls as backend endpoints become available
+
+### Environment Variables
+- All API URLs use `EXPO_PUBLIC_API_URL` environment variable
+- Update the IP address in `.env` to match your backend server
+- For local development, use your computer's local IP address
+
+### Permissions
+- Camera permission required for QR scanning
+- Notification permissions for push notifications
+- Location permissions (optional, for gym discovery)
+
+## Troubleshooting
+
+### Common Issues
+
+1. **API Connection Failed**
+   - Check `EXPO_PUBLIC_API_URL` in `.env`
+   - Ensure backend server is running
+   - Verify network connectivity
+
+2. **Camera Permission Denied**
+   - Grant camera permission in device settings
+   - Restart the app after granting permission
+
+3. **Build Errors**
+   - Clear Metro cache: `npx expo start --clear`
+   - Reinstall dependencies: `rm -rf node_modules && npm install`
+
+4. **Navigation Issues**
+   - Ensure all screen components are properly exported
+   - Check navigation type definitions
+
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Add tests if applicable
+4. Test thoroughly
 5. Submit a pull request
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License.
 
-## 🆘 Support
+## Support
 
 For support and questions:
-- Create an issue in the repository
+- Check the troubleshooting section
+- Review API documentation
 - Contact the development team
-- Check the documentation
-- Review BACKEND_SETUP.md for backend issues
-
----
-
-**Fitlink** - Your fitness journey starts here! 💪
-
-## 🔗 Quick Links
-
-- [Backend Setup Guide](./BACKEND_SETUP.md)
-- [Environment Configuration](./env.example)
-- [API Documentation](./BACKEND_SETUP.md#api-endpoints)

@@ -1,8 +1,8 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 
 // Base API configuration
-const API_BASE_URL = 'http://172.20.10.4:8000/api/v1';
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
 // Create axios instance
 const api = axios.create({
@@ -17,7 +17,7 @@ const api = axios.create({
 // Request interceptor to add auth token
 api.interceptors.request.use(
   async (config) => {
-    const token = await AsyncStorage.getItem('auth_token');
+    const token = await SecureStore.getItemAsync('auth_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -39,7 +39,7 @@ api.interceptors.response.use(
 
       try {
         // Try to refresh the token
-        const refreshToken = await AsyncStorage.getItem('refresh_token');
+        const refreshToken = await SecureStore.getItemAsync('refresh_token');
         if (refreshToken) {
           const response = await axios.post(`${API_BASE_URL}/refresh`, {}, {
             headers: {
@@ -50,7 +50,7 @@ api.interceptors.response.use(
           });
 
           const { token } = response.data;
-          await AsyncStorage.setItem('auth_token', token);
+          await SecureStore.setItemAsync('auth_token', token);
 
           // Retry the original request with new token
           originalRequest.headers.Authorization = `Bearer ${token}`;
@@ -58,7 +58,9 @@ api.interceptors.response.use(
         }
       } catch (refreshError) {
         // Refresh failed, clear storage and redirect to login
-        await AsyncStorage.multiRemove(['auth_token', 'refresh_token', 'user_data']);
+        await SecureStore.deleteItemAsync('auth_token');
+        await SecureStore.deleteItemAsync('refresh_token');
+        await SecureStore.deleteItemAsync('user_data');
         // TODO: Navigate to login screen
         console.error('Token refresh failed:', refreshError);
       }
@@ -81,7 +83,8 @@ export const testAPI = async () => {
   }
 };
 
-// Auth API endpoints
+// Auth API endpoints - moved to separate file
+// This is kept for backward compatibility
 export const authAPI = {
   login: async (email: string, password: string) => {
     try {
@@ -89,11 +92,9 @@ export const authAPI = {
       const { user, token } = response.data;
       
       // Store tokens and user data
-      await AsyncStorage.multiSet([
-        ['auth_token', token],
-        ['refresh_token', token], // Laravel Sanctum uses same token for refresh
-        ['user_data', JSON.stringify(user)]
-      ]);
+      await SecureStore.setItemAsync('auth_token', token);
+      await SecureStore.setItemAsync('refresh_token', token); // Laravel Sanctum uses same token for refresh
+      await SecureStore.setItemAsync('user_data', JSON.stringify(user));
       
       return { success: true, user, token };
     } catch (error: any) {
@@ -116,11 +117,9 @@ export const authAPI = {
       const { user, token } = response.data;
       
       // Store tokens and user data
-      await AsyncStorage.multiSet([
-        ['auth_token', token],
-        ['refresh_token', token],
-        ['user_data', JSON.stringify(user)]
-      ]);
+      await SecureStore.setItemAsync('auth_token', token);
+      await SecureStore.setItemAsync('refresh_token', token);
+      await SecureStore.setItemAsync('user_data', JSON.stringify(user));
       
       return { success: true, user, token };
     } catch (error: any) {
@@ -134,11 +133,15 @@ export const authAPI = {
   logout: async () => {
     try {
       await api.post('/auth/logout');
-      await AsyncStorage.multiRemove(['auth_token', 'refresh_token', 'user_data']);
+      await SecureStore.deleteItemAsync('auth_token');
+      await SecureStore.deleteItemAsync('refresh_token');
+      await SecureStore.deleteItemAsync('user_data');
       return { success: true };
     } catch (error: any) {
       // Even if logout fails, clear local storage
-      await AsyncStorage.multiRemove(['auth_token', 'refresh_token', 'user_data']);
+      await SecureStore.deleteItemAsync('auth_token');
+      await SecureStore.deleteItemAsync('refresh_token');
+      await SecureStore.deleteItemAsync('user_data');
       return { success: true };
     }
   },
@@ -159,7 +162,7 @@ export const authAPI = {
     try {
       const response = await api.post('/refresh');
       const { token } = response.data;
-      await AsyncStorage.setItem('auth_token', token);
+      await SecureStore.setItemAsync('auth_token', token);
       return { success: true, token };
     } catch (error: any) {
       return { 
@@ -290,8 +293,8 @@ export const gymOwnerAPI = {
 // Utility functions
 export const checkAuthStatus = async () => {
   try {
-    const token = await AsyncStorage.getItem('auth_token');
-    const userData = await AsyncStorage.getItem('user_data');
+    const token = await SecureStore.getItemAsync('auth_token');
+    const userData = await SecureStore.getItemAsync('user_data');
     
     if (token && userData) {
       // Verify token is still valid
@@ -300,7 +303,9 @@ export const checkAuthStatus = async () => {
         return { isAuthenticated: true, user: meResult.user };
       } else {
         // Token invalid, clear storage
-        await AsyncStorage.multiRemove(['auth_token', 'refresh_token', 'user_data']);
+        await SecureStore.deleteItemAsync('auth_token');
+        await SecureStore.deleteItemAsync('refresh_token');
+        await SecureStore.deleteItemAsync('user_data');
         return { isAuthenticated: false, user: null };
       }
     }
